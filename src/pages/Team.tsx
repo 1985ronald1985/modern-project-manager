@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Plus, Search, Filter, Mail, MessageCircle, MoreHorizontal } from 'lucide-react'
+import { Plus, Search, Filter, Mail, MessageCircle, MoreHorizontal, RefreshCw } from 'lucide-react'
 import { TeamMemberCard } from '../components/TeamMemberCard'
 import { InviteMemberModal } from '../components/InviteMemberModal'
+import { getTeamMembers, deleteTeamMember, type TeamMember } from '../lib/api'
 
 const initialTeamMembers = [
   {
@@ -78,14 +79,62 @@ const initialTeamMembers = [
 ]
 
 export function Team() {
-  const [teamMembers, setTeamMembers] = useState(initialTeamMembers)
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [showInviteModal, setShowInviteModal] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [filterRole, setFilterRole] = useState('all')
 
-  const handleDeleteMember = (memberId: string) => {
+  // Cargar datos desde la API
+  const loadTeamMembers = async () => {
+    try {
+      setLoading(true)
+      setError(null)
+      const members = await getTeamMembers()
+      setTeamMembers(members)
+    } catch (err) {
+      setError('Error al cargar los miembros del equipo')
+      console.error('Error loading team members:', err)
+      // Fallback a localStorage si la API falla
+      const savedMembers = localStorage.getItem('teamMembers')
+      if (savedMembers) {
+        setTeamMembers(JSON.parse(savedMembers))
+      } else {
+        setTeamMembers(initialTeamMembers)
+      }
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Cargar datos al montar el componente
+  useEffect(() => {
+    loadTeamMembers()
+  }, [])
+
+  const handleDeleteMember = async (memberId: string) => {
     if (window.confirm('¿Estás seguro de que quieres eliminar este miembro del equipo?')) {
-      setTeamMembers(prev => prev.filter(member => member.id !== memberId))
+      try {
+        await deleteTeamMember(memberId)
+        // Actualizar el estado local inmediatamente
+        setTeamMembers(prev => prev.filter(member => member.id !== memberId))
+      } catch (err) {
+        setError('Error al eliminar el miembro')
+        console.error('Error deleting member:', err)
+      }
+    }
+  }
+
+  const handleRestoreTeam = async () => {
+    if (window.confirm('¿Quieres restaurar el equipo original? Esto agregará de vuelta a todos los miembros eliminados.')) {
+      try {
+        // Recargar desde la API (que reinicializará con datos originales si es necesario)
+        await loadTeamMembers()
+      } catch (err) {
+        setError('Error al restaurar el equipo')
+        console.error('Error restoring team:', err)
+      }
     }
   }
 
@@ -178,22 +227,86 @@ export function Team() {
             <option value="manager">Managers</option>
             <option value="devops">DevOps</option>
           </select>
+          
+          {/* Botón para restaurar equipo original */}
+          {teamMembers.length < initialTeamMembers.length && (
+            <button
+              onClick={handleRestoreTeam}
+              className="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-lg text-sm flex items-center space-x-1"
+            >
+              <Plus className="w-4 h-4" />
+              <span className="hidden sm:inline">Restaurar Equipo</span>
+              <span className="sm:hidden">Restaurar</span>
+            </button>
+          )}
         </div>
       </div>
 
-      {/* Team Members Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredMembers.map((member, index) => (
-          <motion.div
-            key={member.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1 }}
-          >
-            <TeamMemberCard member={member} onDelete={handleDeleteMember} />
-          </motion.div>
-        ))}
-      </div>
+      {/* Error Message */}
+      {error && (
+        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+          <div className="flex items-center justify-between">
+            <p className="text-red-800 dark:text-red-200">{error}</p>
+            <button
+              onClick={() => {
+                setError(null)
+                loadTeamMembers()
+              }}
+              className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-200"
+            >
+              <RefreshCw className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Loading State */}
+      {loading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[...Array(6)].map((_, index) => (
+            <div key={index} className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700 animate-pulse">
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="w-12 h-12 bg-gray-300 dark:bg-gray-600 rounded-full"></div>
+                <div className="space-y-2">
+                  <div className="h-4 bg-gray-300 dark:bg-gray-600 rounded w-24"></div>
+                  <div className="h-3 bg-gray-300 dark:bg-gray-600 rounded w-32"></div>
+                </div>
+              </div>
+              <div className="space-y-3">
+                <div className="h-3 bg-gray-300 dark:bg-gray-600 rounded"></div>
+                <div className="h-3 bg-gray-300 dark:bg-gray-600 rounded w-3/4"></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        /* Team Members Grid */
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredMembers.length > 0 ? (
+            filteredMembers.map((member, index) => (
+              <motion.div
+                key={member.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+              >
+                <TeamMemberCard member={member} onDelete={handleDeleteMember} />
+              </motion.div>
+            ))
+          ) : (
+            <div className="col-span-full text-center py-12">
+              <p className="text-gray-500 dark:text-gray-400">No se encontraron miembros del equipo</p>
+              <button
+                onClick={loadTeamMembers}
+                className="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 mx-auto"
+              >
+                <RefreshCw className="w-4 h-4" />
+                <span>Recargar</span>
+              </button>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Invite Member Modal */}
       {showInviteModal && (
