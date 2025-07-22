@@ -36,3 +36,140 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+/* Mejoras para móviles */
+@media (max-width: 640px) {
+  /* Mejorar el tap target size en móviles */
+  button, a, [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Mejorar el espaciado en móviles */
+  .mobile-spacing {
+    padding: 0.75rem;
+  }
+  
+  /* Texto más legible en móviles */
+  .mobile-text {
+    font-size: 16px;
+    line-height: 1.5;
+  }
+}
+
+/* Utilidades para truncar texto */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Mejoras para touch devices */
+@media (hover: none) and (pointer: coarse) {
+  /* Aumentar el área de toque en dispositivos táctiles */
+  .touch-target {
+    padding: 0.75rem;
+  }
+  
+  /* Remover hover effects en dispositivos táctiles */
+  .hover\:shadow-md:hover {
+    box-shadow: none;
+  }
+}
+
+/* Scrollbar personalizado para móviles */
+@media (max-width: 768px) {
+  ::-webkit-scrollbar {
+    width: 4px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: rgba(156, 163, 175, 0.5);
+    border-radius: 2px;
+  }
+}
+
+/* Mejoras adicionales para móviles */
+@media (max-width: 640px) {
+  /* Prevenir zoom en inputs en iOS */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="search"],
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
+  
+  /* Mejorar el espaciado de cards en móviles */
+  .mobile-card {
+    margin-bottom: 0.75rem;
+    border-radius: 0.5rem;
+  }
+  
+  /* Mejorar la navegación en móviles */
+  .mobile-nav {
+    padding: 1rem 0.75rem;
+  }
+  
+  /* Mejorar el espaciado general en móviles */
+  .mobile-container {
+    padding: 0.75rem;
+  }
+  
+  /* Botones más grandes para móviles */
+  .mobile-button {
+    min-height: 48px;
+    padding: 0.75rem 1rem;
+    font-size: 16px;
+  }
+  
+  /* Texto más legible en móviles */
+  h1 { font-size: 1.5rem !important; }
+  h2 { font-size: 1.25rem !important; }
+  h3 { font-size: 1.125rem !important; }
+  
+  /* Mejorar el grid en móviles */
+  .mobile-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+}
+
+/* Mejoras para tablets */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .tablet-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+}
+
+/* Utilidades para responsive design */
+.safe-area-top {
+  padding-top: env(safe-area-inset-top);
+}
+
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Mejoras para accesibilidad en móviles */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

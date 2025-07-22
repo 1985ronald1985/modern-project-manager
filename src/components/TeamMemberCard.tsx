@@ -1,4 +1,5 @@
-import { Mail, MessageCircle, MoreHorizontal, Clock, CheckCircle } from 'lucide-react'
+import { useState, useEffect, useRef } from 'react'
+import { Mail, MessageCircle, MoreHorizontal, Clock, CheckCircle, Trash2, Edit, UserMinus } from 'lucide-react'
 
 interface TeamMember {
   id: string
@@ -17,9 +18,30 @@ interface TeamMember {
 
 interface TeamMemberCardProps {
   member: TeamMember
+  onDelete?: (memberId: string) => void
 }
 
-export function TeamMemberCard({ member }: TeamMemberCardProps) {
+export function TeamMemberCard({ member, onDelete }: TeamMemberCardProps) {
+  const [showDropdown, setShowDropdown] = useState(false)
+  const dropdownRef = useRef<HTMLDivElement>(null)
+
+  // Cerrar dropdown cuando se hace clic fuera
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowDropdown(false)
+      }
+    }
+
+    if (showDropdown) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [showDropdown])
+
   const statusColors = {
     online: 'bg-green-500',
     away: 'bg-yellow-500',
@@ -36,6 +58,13 @@ export function TeamMemberCard({ member }: TeamMemberCardProps) {
     if (workload >= 90) return 'text-red-600 bg-red-100 dark:bg-red-900 dark:text-red-200'
     if (workload >= 75) return 'text-yellow-600 bg-yellow-100 dark:bg-yellow-900 dark:text-yellow-200'
     return 'text-green-600 bg-green-100 dark:bg-green-900 dark:text-green-200'
+  }
+
+  const handleDelete = () => {
+    if (onDelete) {
+      onDelete(member.id)
+    }
+    setShowDropdown(false)
   }
 
   return (
@@ -60,9 +89,38 @@ export function TeamMemberCard({ member }: TeamMemberCardProps) {
             </p>
           </div>
         </div>
-        <button className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
-          <MoreHorizontal className="w-5 h-5" />
-        </button>
+        <div className="relative">
+          <button 
+            onClick={() => setShowDropdown(!showDropdown)}
+            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+          >
+            <MoreHorizontal className="w-5 h-5" />
+          </button>
+          
+          {/* Dropdown Menu */}
+          {showDropdown && (
+            <div ref={dropdownRef} className="absolute right-0 top-8 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-10">
+              <div className="py-1">
+                <button className="flex items-center space-x-2 w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                  <Edit className="w-4 h-4" />
+                  <span>Editar perfil</span>
+                </button>
+                <button className="flex items-center space-x-2 w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                  <UserMinus className="w-4 h-4" />
+                  <span>Cambiar rol</span>
+                </button>
+                <hr className="my-1 border-gray-200 dark:border-gray-700" />
+                <button 
+                  onClick={handleDelete}
+                  className="flex items-center space-x-2 w-full px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  <span>Eliminar miembro</span>
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Workload */}

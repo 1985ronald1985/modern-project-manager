@@ -37,15 +37,17 @@ const insights = [
 
 export function AIInsights() {
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
-      <div className="flex items-center space-x-2 mb-6">
-        <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg">
-          <Bot className="w-5 h-5 text-white" />
+    <div className="bg-white dark:bg-gray-800 rounded-lg p-4 sm:p-6 border border-gray-200 dark:border-gray-700">
+      <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 mb-4 sm:mb-6">
+        <div className="flex items-center space-x-2">
+          <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg">
+            <Bot className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+          </div>
+          <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">
+            Insights de IA
+          </h3>
         </div>
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-          Insights de IA
-        </h3>
-        <span className="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 text-xs px-2 py-1 rounded-full">
+        <span className="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 text-xs px-2 py-1 rounded-full self-start sm:self-auto">
           Activo
         </span>
       </div>

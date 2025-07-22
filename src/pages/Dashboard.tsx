@@ -51,27 +51,28 @@ export function Dashboard() {
   ]
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-3 sm:space-y-6 mobile-container">
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col space-y-3 sm:flex-row sm:justify-between sm:items-center sm:space-y-0">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+          <h1 className="text-xl sm:text-3xl font-bold text-gray-900 dark:text-white">
             Dashboard
           </h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">
-            Bienvenido de vuelta. Aquí tienes un resumen de tu productividad.
+          <p className="text-gray-600 dark:text-gray-400 mt-1 text-sm sm:text-base">
+            Bienvenido de vuelta. Resumen de productividad.
           </p>
         </div>
-        <div className="flex space-x-3">
-          <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2">
-            <Bot className="w-4 h-4" />
-            <span>Análisis IA</span>
+        <div className="flex justify-start sm:justify-end">
+          <button className="mobile-button bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg flex items-center space-x-2 text-base font-medium shadow-lg">
+            <Bot className="w-5 h-5" />
+            <span className="hidden sm:inline">Análisis IA</span>
+            <span className="sm:hidden">IA</span>
           </button>
         </div>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
         {stats.map((stat, index) => (
           <motion.div
             key={stat.title}
@@ -85,7 +86,7 @@ export function Dashboard() {
       </div>
 
       {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-6">
         {/* AI Insights */}
         <motion.div
           initial={{ opacity: 0, x: -20 }}

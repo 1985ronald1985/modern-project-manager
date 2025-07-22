@@ -57,12 +57,12 @@ const activities = [
 
 export function RecentActivity() {
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+    <div className="bg-white dark:bg-gray-800 rounded-lg p-4 sm:p-6 border border-gray-200 dark:border-gray-700">
+      <div className="flex items-center justify-between mb-4 sm:mb-6">
+        <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">
           Actividad Reciente
         </h3>
-        <Clock className="w-5 h-5 text-gray-400" />
+        <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
       </div>
 
       <div className="space-y-4">

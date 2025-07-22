@@ -16,6 +16,5 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: true,
-  },
-  base: './', // Para que funcione en cualquier dominio
+  }
 })

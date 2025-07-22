@@ -4,7 +4,7 @@ import { Plus, Search, Filter, Mail, MessageCircle, MoreHorizontal } from 'lucid
 import { TeamMemberCard } from '../components/TeamMemberCard'
 import { InviteMemberModal } from '../components/InviteMemberModal'
 
-const teamMembers = [
+const initialTeamMembers = [
   {
     id: '1',
     name: 'Ana García',
@@ -78,9 +78,16 @@ const teamMembers = [
 ]
 
 export function Team() {
+  const [teamMembers, setTeamMembers] = useState(initialTeamMembers)
   const [showInviteModal, setShowInviteModal] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [filterRole, setFilterRole] = useState('all')
+
+  const handleDeleteMember = (memberId: string) => {
+    if (window.confirm('¿Estás seguro de que quieres eliminar este miembro del equipo?')) {
+      setTeamMembers(prev => prev.filter(member => member.id !== memberId))
+    }
+  }
 
   const filteredMembers = teamMembers.filter(member => {
     const matchesSearch = member.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -183,7 +190,7 @@ export function Team() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
           >
-            <TeamMemberCard member={member} />
+            <TeamMemberCard member={member} onDelete={handleDeleteMember} />
           </motion.div>
         ))}
       </div>
